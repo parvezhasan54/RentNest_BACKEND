@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Property" ADD COLUMN     "country" TEXT NOT NULL DEFAULT 'USA',
+ADD COLUMN     "latitude" DOUBLE PRECISION,
+ADD COLUMN     "longitude" DOUBLE PRECISION,
+ADD COLUMN     "zipCode" TEXT,
+ALTER COLUMN "location" DROP NOT NULL,
+ALTER COLUMN "neighborhood" DROP NOT NULL;

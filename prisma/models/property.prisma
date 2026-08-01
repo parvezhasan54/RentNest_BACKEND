@@ -1,24 +1,54 @@
 model Property {
-  id          String         @id @default(uuid())
-  title       String
-  description String
-  location    String
-  price       Decimal        @db.Decimal(10, 2)
-  bedrooms    Int?
-  bathrooms   Int?
-  amenities   String[]
-  images      String[]
-  status      PropertyStatus @default(AVAILABLE)
+  id            String   @id @default(uuid())
 
-  landlordId String
-  landlord   User   @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  // Address
+  address       String          
+  neighborhood  String?         
+  city          String          
+  state         String        
+  zipCode       String?     
+  country       String          @default("USA")
 
-  rentals RentalRequest[]
-  reviews Review[]
+  // Coordinates (for maps & nearby search)
+  latitude      Float?
+  longitude     Float?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Display location
+  location      String?         
+
+  // Property details
+  price         Decimal @db.Decimal(10,2)
+  bedrooms      Int?
+  bathrooms     Int?
+  sqft          Int?
+
+  amenities     String[]
+  images        String[]
+
+  // Availability
+  available     Boolean         @default(true)
+  availableFrom DateTime?
+
+  // Statistics
+  rating        Float           @default(0)
+  reviewCount   Int             @default(0)
+  featured      Boolean         @default(false)
+
+  status        PropertyStatus  @default(AVAILABLE)
+
+  // Relations
+  landlordId    String
+  landlord      User            @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+
+  categoryId    String
+  category      Category        @relation(fields: [categoryId], references: [id])
+
+  rentals       RentalRequest[]
+  reviews       Review[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

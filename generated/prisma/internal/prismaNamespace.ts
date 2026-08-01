@@ -922,12 +922,22 @@ export const PropertyScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  neighborhood: 'neighborhood',
   location: 'location',
   price: 'price',
   bedrooms: 'bedrooms',
   bathrooms: 'bathrooms',
+  sqft: 'sqft',
   amenities: 'amenities',
   images: 'images',
+  available: 'available',
+  availableFrom: 'availableFrom',
+  rating: 'rating',
+  reviewCount: 'reviewCount',
+  featured: 'featured',
   status: 'status',
   landlordId: 'landlordId',
   categoryId: 'categoryId',
@@ -1095,6 +1105,27 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
  * Reference to a field of type 'PropertyStatus'
  */
 export type EnumPropertyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyStatus'>
@@ -1133,27 +1164,6 @@ export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'Role[]'
  */
 export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**

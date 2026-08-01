@@ -3,34 +3,60 @@ import AppError from "../../utils/AppError";
 import { ICreateProperty } from "../property/property.interface";
 import { IUpdateProperty } from "./landlord.interface";
 import HttpsStatus from "http-status-codes";
-const createPropertyDB = async (payload: ICreateProperty, landlordId: string) => {
-    const category = await prisma.category.findUnique({
-        where: {
-            id: payload.categoryId
-        }
-    });
+const createPropertyDB = async (
+  payload: ICreateProperty,
+  landlordId: string
+) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: payload.categoryId,
+    },
+  });
 
-    if (!category) {
-        throw new AppError(404, "Category not found");
-    }
-    if (!landlordId) {
-        throw new AppError(HttpsStatus.BAD_REQUEST, "Landlord is required");
-    };
-    const result = await prisma.property.create({
-        data: {
-            title: payload.title,
-            description: payload.description,
-            location: payload.location,
-            price: payload.price,
-            images: payload.images,
-            bedrooms: payload.bedrooms,
-            bathrooms: payload.bathrooms,
-            amenities: payload.amenities,
-            landlordId,
-            categoryId: payload.categoryId,
-        },
-    });
-    return result;
+  if (!category) {
+    throw new AppError(404, "Category not found");
+  }
+
+  if (!landlordId) {
+    throw new AppError(HttpsStatus.BAD_REQUEST, "Landlord is required");
+  }
+
+  const result = await prisma.property.create({
+    data: {
+      title: payload.title,
+      description: payload.description,
+
+      address: payload.address,
+      city: payload.city,
+      state: payload.state,
+      neighborhood: payload.neighborhood,
+      location:
+        payload.location ??
+        `${payload.address}, ${payload.neighborhood}, ${payload.city}, ${payload.state}`,
+
+      price: payload.price,
+      bedrooms: payload.bedrooms,
+      bathrooms: payload.bathrooms,
+      sqft: payload.sqft,
+
+      amenities: payload.amenities,
+      images: payload.images,
+
+      available: payload.available,
+      availableFrom: payload.availableFrom
+        ? new Date(payload.availableFrom)
+        : null,
+
+      rating: payload.rating,
+      reviewCount: payload.reviewCount,
+      featured: payload.featured,
+
+      landlordId,
+      categoryId: payload.categoryId,
+    },
+  });
+
+  return result;
 };
 
 

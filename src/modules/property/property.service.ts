@@ -1,75 +1,136 @@
-import { prisma } from "../../lib/prisma"
-import AppError from "../../utils/AppError";
+import { Prisma } from "../../../generated/prisma/client";
+import { prisma } from "../../lib/prisma";
 
+const getAllPropertiesFromDB = async (
+    queryParams: {
+        city?: string;
+        category?: string;
+        minPrice?: string;
+        maxPrice?: string;
+        sort?: string;
+        page?: string;
+        limit?: string;
+    }
+) => {
 
-const getAllPropertiesFromDB = async (queryParams: {
-    location?: string;
-    price?: number;
-    type?: string;
-}) => {
-    const { location, price, type } = queryParams;
+    const {
+        city,
+        category,
+        minPrice,
+        maxPrice,
+        sort,
+        page = "1",
+        limit = "9",
+    } = queryParams;
 
-    const result = await prisma.property.findMany({
-        where: {
-            ...(location && {
-                location: {
-                    contains: location,
-                    mode: "insensitive",
-                },
-            }),
+    const currentPage = Math.max(1, Number(page) || 1);
+    const isAll = limit === "all";
+    const pageLimit:number|undefined = isAll ? undefined : Math.max(1, Number(limit) || 9);
+    const skip = isAll ? undefined : (currentPage - 1) * pageLimit!;
+    const where: Prisma.PropertyWhereInput = {
+        ...(city && {
+            city: {
+                contains: city,
+                mode: Prisma.QueryMode.insensitive,
+            },
+        }),
 
-            ...(price && {
+        ...(minPrice || maxPrice
+            ? {
                 price: {
-                    lte: Number(price),
+                    ...(minPrice && {
+                        gte: new Prisma.Decimal(minPrice),
+                    }),
+                    ...(maxPrice && {
+                        lte: new Prisma.Decimal(maxPrice),
+                    }),
                 },
-            }),
+            }
+            : {}),
 
-            ...(type && {
-                category: {
-                    name: {
-                        equals: type,
-                        mode: "insensitive",
-                    },
-                },
-            }),
-        },
-
-        include: {
-            category: true,
-            landlord: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
+        ...(category && {
+            category: {
+                name: {
+                    equals: category,
+                    mode: Prisma.QueryMode.insensitive,
                 },
             },
-        },
-    });
+        }),
+    };
 
-    return result;
+
+
+    const [result, total] = await Promise.all([
+        prisma.property.findMany({
+            where,
+
+            skip,
+            take: pageLimit,
+
+            orderBy:
+                sort === "price_low"
+                    ? { price: "asc" }
+                    : sort === "price_high"
+                        ? { price: "desc" }
+                        : sort === "newest"
+                            ? { createdAt: "desc" }
+                            : undefined,
+
+            include: {
+                category: true,
+                landlord: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        }),
+
+        prisma.property.count({ where }),
+    ]);
+
+
+    return {
+        data: result,
+        meta: {
+            page: currentPage,
+            limit: isAll ? total : pageLimit,
+            total,
+            totalPage: isAll ? 1 : Math.ceil(total / pageLimit!),
+        },
+    };
+
 };
-
 const getPropertyByIdFromDB = async (propertyId: string) => {
-    const result = await prisma.property.findUnique({
-        where: {
-            id: propertyId
+  const result = await prisma.property.findUnique({
+    where: {
+      id: propertyId,
+    },
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
         },
-        include: {
-            category: true,
-            landlord: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true
-                }
-            }
+      },
+      landlord: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
         },
-        omit: {
-            categoryId: true,
-            landlordId: true
-        }
-    });
-    return result;
-}
+      },
+    },
+  });
+ 
+  if (!result) return null;
+ 
+  return {
+    ...result,
+    price: Number(result.price),
+  };
+};
 
 export const propertyService = { getAllPropertiesFromDB, getPropertyByIdFromDB }

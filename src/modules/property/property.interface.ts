@@ -1,11 +1,27 @@
 export interface ICreateProperty {
   title: string;
   description: string;
-  location: string;
+
+  address: string;
+  city: string;
+  state: string;
+  neighborhood: string;
+  location?: string;
+
   price: number;
+  bedrooms: number;
+  bathrooms: number;
+  sqft: number;
+
   images: string[];
-  bedrooms?: number;
-  bathrooms?: number;
   amenities: string[];
+
+  available: boolean;
+  availableFrom?: Date | string | null;
+
+  rating?: number;
+  reviewCount?: number;
+  featured?: boolean;
+
   categoryId: string;
 }

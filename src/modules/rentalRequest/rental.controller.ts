@@ -3,7 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { requestService } from "./rental.service";
 import { sendResponse } from "../../utils/sendResponse";
 import HttsStatus from "http-status-codes"
-import { Result } from "pg";
+
 const createRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const tenantId = req.user?.id;
     const result = await requestService.createRequest(req.body, tenantId as string);

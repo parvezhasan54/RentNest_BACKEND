@@ -17,7 +17,11 @@ const app = express();
 
 //use middleware
 app.use(cors({
-    origin: [config.app_url as string, 'https://rent-nest-q3qu.onrender.com'],
+    origin: [
+        config.app_url as string,
+        'https://rent-nest-q3qu.onrender.com',
+        'http://localhost:3000',
+    ],
     credentials: true,
 }));
 

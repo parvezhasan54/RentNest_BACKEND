@@ -30,22 +30,38 @@ export type PropertyAvgAggregateOutputType = {
   price: runtime.Decimal | null
   bedrooms: number | null
   bathrooms: number | null
+  sqft: number | null
+  rating: number | null
+  reviewCount: number | null
 }
 
 export type PropertySumAggregateOutputType = {
   price: runtime.Decimal | null
   bedrooms: number | null
   bathrooms: number | null
+  sqft: number | null
+  rating: number | null
+  reviewCount: number | null
 }
 
 export type PropertyMinAggregateOutputType = {
   id: string | null
   title: string | null
   description: string | null
+  address: string | null
+  city: string | null
+  state: string | null
+  neighborhood: string | null
   location: string | null
   price: runtime.Decimal | null
   bedrooms: number | null
   bathrooms: number | null
+  sqft: number | null
+  available: boolean | null
+  availableFrom: Date | null
+  rating: number | null
+  reviewCount: number | null
+  featured: boolean | null
   status: $Enums.PropertyStatus | null
   landlordId: string | null
   categoryId: string | null
@@ -57,10 +73,20 @@ export type PropertyMaxAggregateOutputType = {
   id: string | null
   title: string | null
   description: string | null
+  address: string | null
+  city: string | null
+  state: string | null
+  neighborhood: string | null
   location: string | null
   price: runtime.Decimal | null
   bedrooms: number | null
   bathrooms: number | null
+  sqft: number | null
+  available: boolean | null
+  availableFrom: Date | null
+  rating: number | null
+  reviewCount: number | null
+  featured: boolean | null
   status: $Enums.PropertyStatus | null
   landlordId: string | null
   categoryId: string | null
@@ -72,12 +98,22 @@ export type PropertyCountAggregateOutputType = {
   id: number
   title: number
   description: number
+  address: number
+  city: number
+  state: number
+  neighborhood: number
   location: number
   price: number
   bedrooms: number
   bathrooms: number
+  sqft: number
   amenities: number
   images: number
+  available: number
+  availableFrom: number
+  rating: number
+  reviewCount: number
+  featured: number
   status: number
   landlordId: number
   categoryId: number
@@ -91,22 +127,38 @@ export type PropertyAvgAggregateInputType = {
   price?: true
   bedrooms?: true
   bathrooms?: true
+  sqft?: true
+  rating?: true
+  reviewCount?: true
 }
 
 export type PropertySumAggregateInputType = {
   price?: true
   bedrooms?: true
   bathrooms?: true
+  sqft?: true
+  rating?: true
+  reviewCount?: true
 }
 
 export type PropertyMinAggregateInputType = {
   id?: true
   title?: true
   description?: true
+  address?: true
+  city?: true
+  state?: true
+  neighborhood?: true
   location?: true
   price?: true
   bedrooms?: true
   bathrooms?: true
+  sqft?: true
+  available?: true
+  availableFrom?: true
+  rating?: true
+  reviewCount?: true
+  featured?: true
   status?: true
   landlordId?: true
   categoryId?: true
@@ -118,10 +170,20 @@ export type PropertyMaxAggregateInputType = {
   id?: true
   title?: true
   description?: true
+  address?: true
+  city?: true
+  state?: true
+  neighborhood?: true
   location?: true
   price?: true
   bedrooms?: true
   bathrooms?: true
+  sqft?: true
+  available?: true
+  availableFrom?: true
+  rating?: true
+  reviewCount?: true
+  featured?: true
   status?: true
   landlordId?: true
   categoryId?: true
@@ -133,12 +195,22 @@ export type PropertyCountAggregateInputType = {
   id?: true
   title?: true
   description?: true
+  address?: true
+  city?: true
+  state?: true
+  neighborhood?: true
   location?: true
   price?: true
   bedrooms?: true
   bathrooms?: true
+  sqft?: true
   amenities?: true
   images?: true
+  available?: true
+  availableFrom?: true
+  rating?: true
+  reviewCount?: true
+  featured?: true
   status?: true
   landlordId?: true
   categoryId?: true
@@ -237,12 +309,22 @@ export type PropertyGroupByOutputType = {
   id: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal
   bedrooms: number | null
   bathrooms: number | null
+  sqft: number | null
   amenities: string[]
   images: string[]
+  available: boolean
+  availableFrom: Date | null
+  rating: number
+  reviewCount: number
+  featured: boolean
   status: $Enums.PropertyStatus
   landlordId: string
   categoryId: string
@@ -277,12 +359,22 @@ export type PropertyWhereInput = {
   id?: Prisma.StringFilter<"Property"> | string
   title?: Prisma.StringFilter<"Property"> | string
   description?: Prisma.StringFilter<"Property"> | string
+  address?: Prisma.StringFilter<"Property"> | string
+  city?: Prisma.StringFilter<"Property"> | string
+  state?: Prisma.StringFilter<"Property"> | string
+  neighborhood?: Prisma.StringFilter<"Property"> | string
   location?: Prisma.StringFilter<"Property"> | string
   price?: Prisma.DecimalFilter<"Property"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.IntNullableFilter<"Property"> | number | null
   bathrooms?: Prisma.IntNullableFilter<"Property"> | number | null
+  sqft?: Prisma.IntNullableFilter<"Property"> | number | null
   amenities?: Prisma.StringNullableListFilter<"Property">
   images?: Prisma.StringNullableListFilter<"Property">
+  available?: Prisma.BoolFilter<"Property"> | boolean
+  availableFrom?: Prisma.DateTimeNullableFilter<"Property"> | Date | string | null
+  rating?: Prisma.FloatFilter<"Property"> | number
+  reviewCount?: Prisma.IntFilter<"Property"> | number
+  featured?: Prisma.BoolFilter<"Property"> | boolean
   status?: Prisma.EnumPropertyStatusFilter<"Property"> | $Enums.PropertyStatus
   landlordId?: Prisma.StringFilter<"Property"> | string
   categoryId?: Prisma.StringFilter<"Property"> | string
@@ -298,12 +390,22 @@ export type PropertyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
   location?: Prisma.SortOrder
   price?: Prisma.SortOrder
   bedrooms?: Prisma.SortOrderInput | Prisma.SortOrder
   bathrooms?: Prisma.SortOrderInput | Prisma.SortOrder
+  sqft?: Prisma.SortOrderInput | Prisma.SortOrder
   amenities?: Prisma.SortOrder
   images?: Prisma.SortOrder
+  available?: Prisma.SortOrder
+  availableFrom?: Prisma.SortOrderInput | Prisma.SortOrder
+  rating?: Prisma.SortOrder
+  reviewCount?: Prisma.SortOrder
+  featured?: Prisma.SortOrder
   status?: Prisma.SortOrder
   landlordId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -322,12 +424,22 @@ export type PropertyWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PropertyWhereInput | Prisma.PropertyWhereInput[]
   title?: Prisma.StringFilter<"Property"> | string
   description?: Prisma.StringFilter<"Property"> | string
+  address?: Prisma.StringFilter<"Property"> | string
+  city?: Prisma.StringFilter<"Property"> | string
+  state?: Prisma.StringFilter<"Property"> | string
+  neighborhood?: Prisma.StringFilter<"Property"> | string
   location?: Prisma.StringFilter<"Property"> | string
   price?: Prisma.DecimalFilter<"Property"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.IntNullableFilter<"Property"> | number | null
   bathrooms?: Prisma.IntNullableFilter<"Property"> | number | null
+  sqft?: Prisma.IntNullableFilter<"Property"> | number | null
   amenities?: Prisma.StringNullableListFilter<"Property">
   images?: Prisma.StringNullableListFilter<"Property">
+  available?: Prisma.BoolFilter<"Property"> | boolean
+  availableFrom?: Prisma.DateTimeNullableFilter<"Property"> | Date | string | null
+  rating?: Prisma.FloatFilter<"Property"> | number
+  reviewCount?: Prisma.IntFilter<"Property"> | number
+  featured?: Prisma.BoolFilter<"Property"> | boolean
   status?: Prisma.EnumPropertyStatusFilter<"Property"> | $Enums.PropertyStatus
   landlordId?: Prisma.StringFilter<"Property"> | string
   categoryId?: Prisma.StringFilter<"Property"> | string
@@ -343,12 +455,22 @@ export type PropertyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
   location?: Prisma.SortOrder
   price?: Prisma.SortOrder
   bedrooms?: Prisma.SortOrderInput | Prisma.SortOrder
   bathrooms?: Prisma.SortOrderInput | Prisma.SortOrder
+  sqft?: Prisma.SortOrderInput | Prisma.SortOrder
   amenities?: Prisma.SortOrder
   images?: Prisma.SortOrder
+  available?: Prisma.SortOrder
+  availableFrom?: Prisma.SortOrderInput | Prisma.SortOrder
+  rating?: Prisma.SortOrder
+  reviewCount?: Prisma.SortOrder
+  featured?: Prisma.SortOrder
   status?: Prisma.SortOrder
   landlordId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -368,12 +490,22 @@ export type PropertyScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Property"> | string
   title?: Prisma.StringWithAggregatesFilter<"Property"> | string
   description?: Prisma.StringWithAggregatesFilter<"Property"> | string
+  address?: Prisma.StringWithAggregatesFilter<"Property"> | string
+  city?: Prisma.StringWithAggregatesFilter<"Property"> | string
+  state?: Prisma.StringWithAggregatesFilter<"Property"> | string
+  neighborhood?: Prisma.StringWithAggregatesFilter<"Property"> | string
   location?: Prisma.StringWithAggregatesFilter<"Property"> | string
   price?: Prisma.DecimalWithAggregatesFilter<"Property"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.IntNullableWithAggregatesFilter<"Property"> | number | null
   bathrooms?: Prisma.IntNullableWithAggregatesFilter<"Property"> | number | null
+  sqft?: Prisma.IntNullableWithAggregatesFilter<"Property"> | number | null
   amenities?: Prisma.StringNullableListFilter<"Property">
   images?: Prisma.StringNullableListFilter<"Property">
+  available?: Prisma.BoolWithAggregatesFilter<"Property"> | boolean
+  availableFrom?: Prisma.DateTimeNullableWithAggregatesFilter<"Property"> | Date | string | null
+  rating?: Prisma.FloatWithAggregatesFilter<"Property"> | number
+  reviewCount?: Prisma.IntWithAggregatesFilter<"Property"> | number
+  featured?: Prisma.BoolWithAggregatesFilter<"Property"> | boolean
   status?: Prisma.EnumPropertyStatusWithAggregatesFilter<"Property"> | $Enums.PropertyStatus
   landlordId?: Prisma.StringWithAggregatesFilter<"Property"> | string
   categoryId?: Prisma.StringWithAggregatesFilter<"Property"> | string
@@ -385,12 +517,22 @@ export type PropertyCreateInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -404,12 +546,22 @@ export type PropertyUncheckedCreateInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   landlordId: string
   categoryId: string
@@ -423,12 +575,22 @@ export type PropertyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -442,12 +604,22 @@ export type PropertyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   landlordId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -461,12 +633,22 @@ export type PropertyCreateManyInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   landlordId: string
   categoryId: string
@@ -478,12 +660,22 @@ export type PropertyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -493,12 +685,22 @@ export type PropertyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   landlordId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -528,12 +730,22 @@ export type PropertyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
   location?: Prisma.SortOrder
   price?: Prisma.SortOrder
   bedrooms?: Prisma.SortOrder
   bathrooms?: Prisma.SortOrder
+  sqft?: Prisma.SortOrder
   amenities?: Prisma.SortOrder
   images?: Prisma.SortOrder
+  available?: Prisma.SortOrder
+  availableFrom?: Prisma.SortOrder
+  rating?: Prisma.SortOrder
+  reviewCount?: Prisma.SortOrder
+  featured?: Prisma.SortOrder
   status?: Prisma.SortOrder
   landlordId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -545,16 +757,29 @@ export type PropertyAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
   bedrooms?: Prisma.SortOrder
   bathrooms?: Prisma.SortOrder
+  sqft?: Prisma.SortOrder
+  rating?: Prisma.SortOrder
+  reviewCount?: Prisma.SortOrder
 }
 
 export type PropertyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
   location?: Prisma.SortOrder
   price?: Prisma.SortOrder
   bedrooms?: Prisma.SortOrder
   bathrooms?: Prisma.SortOrder
+  sqft?: Prisma.SortOrder
+  available?: Prisma.SortOrder
+  availableFrom?: Prisma.SortOrder
+  rating?: Prisma.SortOrder
+  reviewCount?: Prisma.SortOrder
+  featured?: Prisma.SortOrder
   status?: Prisma.SortOrder
   landlordId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -566,10 +791,20 @@ export type PropertyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  neighborhood?: Prisma.SortOrder
   location?: Prisma.SortOrder
   price?: Prisma.SortOrder
   bedrooms?: Prisma.SortOrder
   bathrooms?: Prisma.SortOrder
+  sqft?: Prisma.SortOrder
+  available?: Prisma.SortOrder
+  availableFrom?: Prisma.SortOrder
+  rating?: Prisma.SortOrder
+  reviewCount?: Prisma.SortOrder
+  featured?: Prisma.SortOrder
   status?: Prisma.SortOrder
   landlordId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -581,6 +816,9 @@ export type PropertySumOrderByAggregateInput = {
   price?: Prisma.SortOrder
   bedrooms?: Prisma.SortOrder
   bathrooms?: Prisma.SortOrder
+  sqft?: Prisma.SortOrder
+  rating?: Prisma.SortOrder
+  reviewCount?: Prisma.SortOrder
 }
 
 export type PropertyScalarRelationFilter = {
@@ -654,6 +892,26 @@ export type PropertyUpdateamenitiesInput = {
 export type PropertyUpdateimagesInput = {
   set?: string[]
   push?: string | string[]
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type EnumPropertyStatusFieldUpdateOperationsInput = {
@@ -734,12 +992,22 @@ export type PropertyCreateWithoutCategoryInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -752,12 +1020,22 @@ export type PropertyUncheckedCreateWithoutCategoryInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   landlordId: string
   createdAt?: Date | string
@@ -799,12 +1077,22 @@ export type PropertyScalarWhereInput = {
   id?: Prisma.StringFilter<"Property"> | string
   title?: Prisma.StringFilter<"Property"> | string
   description?: Prisma.StringFilter<"Property"> | string
+  address?: Prisma.StringFilter<"Property"> | string
+  city?: Prisma.StringFilter<"Property"> | string
+  state?: Prisma.StringFilter<"Property"> | string
+  neighborhood?: Prisma.StringFilter<"Property"> | string
   location?: Prisma.StringFilter<"Property"> | string
   price?: Prisma.DecimalFilter<"Property"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.IntNullableFilter<"Property"> | number | null
   bathrooms?: Prisma.IntNullableFilter<"Property"> | number | null
+  sqft?: Prisma.IntNullableFilter<"Property"> | number | null
   amenities?: Prisma.StringNullableListFilter<"Property">
   images?: Prisma.StringNullableListFilter<"Property">
+  available?: Prisma.BoolFilter<"Property"> | boolean
+  availableFrom?: Prisma.DateTimeNullableFilter<"Property"> | Date | string | null
+  rating?: Prisma.FloatFilter<"Property"> | number
+  reviewCount?: Prisma.IntFilter<"Property"> | number
+  featured?: Prisma.BoolFilter<"Property"> | boolean
   status?: Prisma.EnumPropertyStatusFilter<"Property"> | $Enums.PropertyStatus
   landlordId?: Prisma.StringFilter<"Property"> | string
   categoryId?: Prisma.StringFilter<"Property"> | string
@@ -816,12 +1104,22 @@ export type PropertyCreateWithoutRentalsInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -834,12 +1132,22 @@ export type PropertyUncheckedCreateWithoutRentalsInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   landlordId: string
   categoryId: string
@@ -868,12 +1176,22 @@ export type PropertyUpdateWithoutRentalsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -886,12 +1204,22 @@ export type PropertyUncheckedUpdateWithoutRentalsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   landlordId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -904,12 +1232,22 @@ export type PropertyCreateWithoutReviewsInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -922,12 +1260,22 @@ export type PropertyUncheckedCreateWithoutReviewsInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   landlordId: string
   categoryId: string
@@ -956,12 +1304,22 @@ export type PropertyUpdateWithoutReviewsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -974,12 +1332,22 @@ export type PropertyUncheckedUpdateWithoutReviewsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   landlordId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -992,12 +1360,22 @@ export type PropertyCreateWithoutLandlordInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1010,12 +1388,22 @@ export type PropertyUncheckedCreateWithoutLandlordInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   categoryId: string
   createdAt?: Date | string
@@ -1054,12 +1442,22 @@ export type PropertyCreateManyCategoryInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   landlordId: string
   createdAt?: Date | string
@@ -1070,12 +1468,22 @@ export type PropertyUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1088,12 +1496,22 @@ export type PropertyUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   landlordId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1106,12 +1524,22 @@ export type PropertyUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   landlordId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1122,12 +1550,22 @@ export type PropertyCreateManyLandlordInput = {
   id?: string
   title: string
   description: string
+  address: string
+  city: string
+  state: string
+  neighborhood: string
   location: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: number | null
   bathrooms?: number | null
+  sqft?: number | null
   amenities?: Prisma.PropertyCreateamenitiesInput | string[]
   images?: Prisma.PropertyCreateimagesInput | string[]
+  available?: boolean
+  availableFrom?: Date | string | null
+  rating?: number
+  reviewCount?: number
+  featured?: boolean
   status?: $Enums.PropertyStatus
   categoryId: string
   createdAt?: Date | string
@@ -1138,12 +1576,22 @@ export type PropertyUpdateWithoutLandlordInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1156,12 +1604,22 @@ export type PropertyUncheckedUpdateWithoutLandlordInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1174,12 +1632,22 @@ export type PropertyUncheckedUpdateManyWithoutLandlordInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  neighborhood?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   bedrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bathrooms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sqft?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amenities?: Prisma.PropertyUpdateamenitiesInput | string[]
   images?: Prisma.PropertyUpdateimagesInput | string[]
+  available?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
+  reviewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPropertyStatusFieldUpdateOperationsInput | $Enums.PropertyStatus
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1230,12 +1698,22 @@ export type PropertySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   title?: boolean
   description?: boolean
+  address?: boolean
+  city?: boolean
+  state?: boolean
+  neighborhood?: boolean
   location?: boolean
   price?: boolean
   bedrooms?: boolean
   bathrooms?: boolean
+  sqft?: boolean
   amenities?: boolean
   images?: boolean
+  available?: boolean
+  availableFrom?: boolean
+  rating?: boolean
+  reviewCount?: boolean
+  featured?: boolean
   status?: boolean
   landlordId?: boolean
   categoryId?: boolean
@@ -1252,12 +1730,22 @@ export type PropertySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   title?: boolean
   description?: boolean
+  address?: boolean
+  city?: boolean
+  state?: boolean
+  neighborhood?: boolean
   location?: boolean
   price?: boolean
   bedrooms?: boolean
   bathrooms?: boolean
+  sqft?: boolean
   amenities?: boolean
   images?: boolean
+  available?: boolean
+  availableFrom?: boolean
+  rating?: boolean
+  reviewCount?: boolean
+  featured?: boolean
   status?: boolean
   landlordId?: boolean
   categoryId?: boolean
@@ -1271,12 +1759,22 @@ export type PropertySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   title?: boolean
   description?: boolean
+  address?: boolean
+  city?: boolean
+  state?: boolean
+  neighborhood?: boolean
   location?: boolean
   price?: boolean
   bedrooms?: boolean
   bathrooms?: boolean
+  sqft?: boolean
   amenities?: boolean
   images?: boolean
+  available?: boolean
+  availableFrom?: boolean
+  rating?: boolean
+  reviewCount?: boolean
+  featured?: boolean
   status?: boolean
   landlordId?: boolean
   categoryId?: boolean
@@ -1290,12 +1788,22 @@ export type PropertySelectScalar = {
   id?: boolean
   title?: boolean
   description?: boolean
+  address?: boolean
+  city?: boolean
+  state?: boolean
+  neighborhood?: boolean
   location?: boolean
   price?: boolean
   bedrooms?: boolean
   bathrooms?: boolean
+  sqft?: boolean
   amenities?: boolean
   images?: boolean
+  available?: boolean
+  availableFrom?: boolean
+  rating?: boolean
+  reviewCount?: boolean
+  featured?: boolean
   status?: boolean
   landlordId?: boolean
   categoryId?: boolean
@@ -1303,7 +1811,7 @@ export type PropertySelectScalar = {
   updatedAt?: boolean
 }
 
-export type PropertyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "location" | "price" | "bedrooms" | "bathrooms" | "amenities" | "images" | "status" | "landlordId" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["property"]>
+export type PropertyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "address" | "city" | "state" | "neighborhood" | "location" | "price" | "bedrooms" | "bathrooms" | "sqft" | "amenities" | "images" | "available" | "availableFrom" | "rating" | "reviewCount" | "featured" | "status" | "landlordId" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["property"]>
 export type PropertyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   landlord?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1332,12 +1840,22 @@ export type $PropertyPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     title: string
     description: string
+    address: string
+    city: string
+    state: string
+    neighborhood: string
     location: string
     price: runtime.Decimal
     bedrooms: number | null
     bathrooms: number | null
+    sqft: number | null
     amenities: string[]
     images: string[]
+    available: boolean
+    availableFrom: Date | null
+    rating: number
+    reviewCount: number
+    featured: boolean
     status: $Enums.PropertyStatus
     landlordId: string
     categoryId: string
@@ -1773,12 +2291,22 @@ export interface PropertyFieldRefs {
   readonly id: Prisma.FieldRef<"Property", 'String'>
   readonly title: Prisma.FieldRef<"Property", 'String'>
   readonly description: Prisma.FieldRef<"Property", 'String'>
+  readonly address: Prisma.FieldRef<"Property", 'String'>
+  readonly city: Prisma.FieldRef<"Property", 'String'>
+  readonly state: Prisma.FieldRef<"Property", 'String'>
+  readonly neighborhood: Prisma.FieldRef<"Property", 'String'>
   readonly location: Prisma.FieldRef<"Property", 'String'>
   readonly price: Prisma.FieldRef<"Property", 'Decimal'>
   readonly bedrooms: Prisma.FieldRef<"Property", 'Int'>
   readonly bathrooms: Prisma.FieldRef<"Property", 'Int'>
+  readonly sqft: Prisma.FieldRef<"Property", 'Int'>
   readonly amenities: Prisma.FieldRef<"Property", 'String[]'>
   readonly images: Prisma.FieldRef<"Property", 'String[]'>
+  readonly available: Prisma.FieldRef<"Property", 'Boolean'>
+  readonly availableFrom: Prisma.FieldRef<"Property", 'DateTime'>
+  readonly rating: Prisma.FieldRef<"Property", 'Float'>
+  readonly reviewCount: Prisma.FieldRef<"Property", 'Int'>
+  readonly featured: Prisma.FieldRef<"Property", 'Boolean'>
   readonly status: Prisma.FieldRef<"Property", 'PropertyStatus'>
   readonly landlordId: Prisma.FieldRef<"Property", 'String'>
   readonly categoryId: Prisma.FieldRef<"Property", 'String'>
