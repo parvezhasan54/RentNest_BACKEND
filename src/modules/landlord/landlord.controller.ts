@@ -15,6 +15,31 @@ const createProperty = catchAsync(async (req: Request, res: Response, next: Next
     })
 });
 
+// returns only the properties owned by the logged-in landlord.
+const getMyProperties = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const landlordId = req.user?.id;
+    const result = await landlordService.getMyPropertiesDB(landlordId as string);
+    sendResponse(res, {
+        success: true,
+        statusCode: HttpsStatus.OK,
+        message: "Properties Retrieved Successfully",
+        data: result
+    })
+});
+
+// NEW: returns a single property owned by the logged-in landlord.
+const getProperty = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const landlordId = req.user?.id;
+    const id = req.params.id;
+    const result = await landlordService.getPropertyDB(id as string, landlordId as string);
+    sendResponse(res, {
+        success: true,
+        statusCode: HttpsStatus.OK,
+        message: "Property Retrieved Successfully",
+        data: result
+    })
+});
+
 const updateProperty = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const landlordId = req.user?.id;
     const id = req.params.id;
@@ -64,4 +89,12 @@ const updateRentalRequest = catchAsync(async (req: Request, res: Response, next:
 
 
 
-export const landlordController = { createProperty, updateProperty, deleteProperty, getAllRentalRequests, updateRentalRequest }
+export const landlordController = {
+  createProperty,
+  getMyProperties,
+  getProperty,
+  updateProperty,
+  deleteProperty,
+  getAllRentalRequests,
+  updateRentalRequest,
+};

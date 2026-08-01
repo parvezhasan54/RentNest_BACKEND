@@ -5,6 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import HttpsStatus from "http-status-codes";
 
 
+
 const getAllProperties = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const queryParams = req.query;
     const result = await propertyService.getAllPropertiesFromDB(queryParams);
@@ -26,5 +27,6 @@ const getPropertyById = catchAsync(async (req: Request, res: Response, next: Nex
         data: result
     })
 });
+
 
 export const propertyController = { getAllProperties, getPropertyById };

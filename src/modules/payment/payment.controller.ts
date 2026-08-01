@@ -1,81 +1,159 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import HttpStatus from "http-status-codes";
-import { catchAsync } from "../../utils/catchAsync";
+
 import { paymentService } from "./payment.service";
+import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import AppError from "../../utils/AppError";
 
-const createPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const tenantId = req.user?.id;
-    const result = await paymentService.createPaymentIntoDB(req.body, tenantId as string);
 
-    sendResponse(res, {
-        success: true,
-        statusCode: HttpStatus.CREATED,
-        message: "Payment session created successfully",
-        data: result,
+
+// CREATE CHECKOUT
+
+const createPayment =
+catchAsync(async(req:Request,res:Response)=>{
+
+
+    const tenantId =
+        req.user?.id;
+
+
+
+    const result =
+    await paymentService.createPaymentIntoDB(
+        req.body,
+        tenantId as string
+    );
+
+
+
+    sendResponse(res,{
+
+        success:true,
+
+        statusCode:
+        HttpStatus.CREATED,
+
+        message:
+        "Payment session created",
+
+        data:result
+
     });
-}
-);
-const confirmPayment = catchAsync(
-    async (req: Request, res: Response) => {
-        // console.log("webhook body:", req.body);
-        const signature = req.headers["stripe-signature"]! as string;
-        // console.log("Stripe Signature:", signature);
-        if (!signature) {
-            throw new AppError(
-                HttpStatus.BAD_REQUEST,
-                "Missing Stripe Signature"
-            );
-        }
 
-        const result = await paymentService.confirmPaymentIntoDB(
-            req.body,
-            signature
+});
+
+
+
+
+
+// WEBHOOK
+
+const confirmPayment =
+catchAsync(async(req:Request,res:Response)=>{
+
+
+    const signature =
+    req.headers[
+        "stripe-signature"
+    ] as string;
+
+
+
+    if(!signature){
+
+        throw new AppError(
+            HttpStatus.BAD_REQUEST,
+            "Stripe signature missing"
         );
 
-        sendResponse(res, {
-            success: true,
-            statusCode: HttpStatus.OK,
-            message: "Payment confirmed successfully",
-            data: result,
-        });
     }
-);
-const getPaymentHistory = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const tenantId = req.user?.id;
-        const result = await paymentService.getPaymentHistoryDB(tenantId as string);
 
-        sendResponse(res, {
-            success: true,
-            statusCode: HttpStatus.OK,
-            message: "Payment history retrieved successfully",
-            data: result,
-        });
-    }
-);
 
-const getPaymentDetails = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const tenantId = req.user?.id;
-        const result = await paymentService.getPaymentDetailsDB(
-            req.params.id as string,
-            tenantId as string
+
+    const result =
+    await paymentService.confirmPaymentIntoDB(
+
+        req.body,
+
+        signature
+
+    );
+
+
+
+    sendResponse(res,{
+
+        success:true,
+
+        statusCode:200,
+
+        message:
+        "Payment confirmed",
+
+        data:result
+
+    });
+
+});
+
+
+
+
+
+// OPTIONAL VERIFY
+
+const verifyPayment =
+catchAsync(async(req:Request,res:Response)=>{
+
+
+    const {sessionId}=req.body;
+
+
+
+    if(!sessionId){
+
+        throw new AppError(
+            400,
+            "Session ID required"
         );
 
-        sendResponse(res, {
-            success: true,
-            statusCode: HttpStatus.OK,
-            message: "Payment details retrieved successfully",
-            data: result,
-        });
     }
-);
+
+
+
+    const result =
+    await paymentService.verifyPayment(
+        sessionId
+    );
+
+
+
+    sendResponse(res,{
+
+        success:true,
+
+        statusCode:200,
+
+        message:
+        "Payment verified",
+
+        data:result
+
+    });
+
+});
+
+
+
+
 
 export const paymentController = {
+
     createPayment,
-    getPaymentHistory,
-    getPaymentDetails,
-    confirmPayment
+
+    confirmPayment,
+
+    verifyPayment
+
 };

@@ -3,6 +3,7 @@ import AppError from "../../utils/AppError";
 import { ICreateProperty } from "../property/property.interface";
 import { IUpdateProperty } from "./landlord.interface";
 import HttpsStatus from "http-status-codes";
+import { PropertyStatus } from "../../../generated/prisma/enums";
 const createPropertyDB = async (
   payload: ICreateProperty,
   landlordId: string
@@ -59,6 +60,41 @@ const createPropertyDB = async (
   return result;
 };
 
+// list only the properties owned by the current landlord.
+const getMyPropertiesDB = async (landlordId: string) => {
+  const result = await prisma.property.findMany({
+    where: {
+      landlordId,
+    },
+    include: {
+      category: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return result;
+};
+
+// NEW: get a single property, scoped to the current landlord.
+const getPropertyDB = async (propertyId: string, landlordId: string) => {
+  const result = await prisma.property.findFirst({
+    where: {
+      id: propertyId,
+      landlordId,
+    },
+    include: {
+      category: true,
+    },
+  });
+
+  if (!result) {
+    throw new AppError(HttpsStatus.NOT_FOUND, "Property not found or unauthorized");
+  }
+
+  return result;
+};
 
 const updatePropertyDB = async (propertyId: string, propertyData: IUpdateProperty, landlordId: string) => {
     const property = await prisma.property.findUnique({
@@ -137,34 +173,97 @@ const getAllRentalRequestsDB = async (landlordId: string) => {
     return result;
 
 };
-const updateRentalRequestDB = async (landlordId: string, rentalRequestId: string, payload: any) => {
-    if (payload.status && !["APPROVED", "REJECTED"].includes(payload.status)) {
-        throw new AppError(HttpsStatus.BAD_REQUEST, "Invalid status value. Allowed values are 'APPROVED' or 'REJECTED'.");
-    }
-    const result = await prisma.rentalRequest.findUnique({
-        where: {
-            id: rentalRequestId,
-            property: {
-                landlordId
-            }
-        }
+
+
+const updateRentalRequestDB = async (
+  landlordId: string,
+  rentalRequestId: string,
+  payload: { status: "APPROVED" | "REJECTED" | "ACTIVE" | "COMPLETED" }
+) => {
+  const allowedStatuses = [
+    "APPROVED",
+    "REJECTED",
+    "ACTIVE",
+    "COMPLETED",
+  ];
+
+  if (!payload.status || !allowedStatuses.includes(payload.status)) {
+    throw new AppError(
+      HttpsStatus.BAD_REQUEST,
+      "Invalid rental request status."
+    );
+  }
+
+  // Verify request belongs to this landlord
+  const request = await prisma.rentalRequest.findFirst({
+    where: {
+      id: rentalRequestId,
+      property: {
+        landlordId,
+      },
+    },
+    include: {
+      property: true,
+    },
+  });
+
+  if (!request) {
+    throw new AppError(
+      HttpsStatus.NOT_FOUND,
+      "Rental request not found or unauthorized"
+    );
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    // Update rental request
+    const updatedRequest = await tx.rentalRequest.update({
+      where: {
+        id: rentalRequestId,
+      },
+      data: {
+        status: payload.status ,
+      },
     });
-    if (!result) {
-        throw new AppError(HttpsStatus.NOT_FOUND, "Rental request not found or unauthorized");
-    };
 
-
-    const updatedRequest = await prisma.rentalRequest.update({
+    // If completed, make property unavailable
+    if (payload.status === "COMPLETED") {
+      await tx.property.update({
         where: {
-            id: rentalRequestId
+          id: request.propertyId,
         },
         data: {
-            ...payload
-        }
-    });
+          available: false,
+          status: PropertyStatus.UNAVAILABLE,
+        },
+      });
+    }
+
+    // If request becomes ACTIVE again, make property available
+    if (payload.status === "ACTIVE") {
+      await tx.property.update({
+        where: {
+          id: request.propertyId,
+        },
+        data: {
+          available: true,
+          status: PropertyStatus.AVAILABLE,
+        },
+      });
+    }
 
     return updatedRequest;
+  });
+
+  return result;
 };
 
 
-export const landlordService = { createPropertyDB, updatePropertyDB, deletePropertyDB, getAllRentalRequestsDB, updateRentalRequestDB }
+export const landlordService = {
+  createPropertyDB,
+  getMyPropertiesDB,
+  getPropertyDB,
+  updatePropertyDB,
+  deletePropertyDB,
+  getAllRentalRequestsDB,
+  updateRentalRequestDB,
+};

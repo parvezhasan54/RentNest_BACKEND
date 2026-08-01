@@ -28,7 +28,7 @@ const getRequestByTenantId = catchAsync(async (req: Request, res: Response, next
 });
 const getRequestByRequestId = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const requestId = req.params.id;
-    // console.log("from Controller : ",{requestId});
+
     const result = await requestService.getRequestByRequestIdDB(requestId as string)||[];
     sendResponse(res, {
         success: true,

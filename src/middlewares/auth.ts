@@ -61,9 +61,6 @@ const auth = (requiredRole: string[]) =>
             email: verifiedToken.data.email,
             role: verifiedToken.data.role,
         };
-
-        // console.log("From auth:", req.user);
-
         next();
     });
 
