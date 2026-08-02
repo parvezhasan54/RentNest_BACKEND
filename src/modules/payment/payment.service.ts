@@ -4,491 +4,242 @@ import {
     PaymentStatus,
     RequestStatus,
 } from "../../../generated/prisma/client";
-
 import { config } from "../../config/index";
 import stripe from "../../config/stripe";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../utils/AppError";
 import HttpStatus from "http-status-codes";
 
-
 // CREATE PAYMENT SESSION
 const createPaymentIntoDB = async (
     payload: any,
     tenantId: string
 ) => {
-
     const { rentalRequestId } = payload;
 
-
-    const rental =
-        await prisma.rentalRequest.findUnique({
-            where:{
-                id:rentalRequestId
+    const rental = await prisma.rentalRequest.findUnique({
+        where: { id: rentalRequestId },
+        include: {
+            property: true,
+            tenant: {
+                omit: {
+                    password: true,
+                },
             },
-            include:{
-                property:true,
-                tenant:{
-                    omit:{
-                        password:true
-                    }
-                }
-            }
-        });
+        },
+    });
 
-
-
-    if(!rental){
+    if (!rental) {
         throw new AppError(
             HttpStatus.NOT_FOUND,
             "Rental request not found"
         );
     }
 
-
-
-    if(rental.tenantId !== tenantId){
-
+    if (rental.tenantId !== tenantId) {
         throw new AppError(
             HttpStatus.FORBIDDEN,
             "You are not allowed to pay"
         );
     }
 
-
-
-    if(rental.status !== RequestStatus.APPROVED){
-
+    if (rental.status !== RequestStatus.APPROVED) {
         throw new AppError(
             HttpStatus.BAD_REQUEST,
             "Rental request is not approved"
         );
     }
 
+    const existingPayment = await prisma.payment.findFirst({
+        where: { rentalRequestId },
+    });
 
-
-    const existingPayment =
-        await prisma.payment.findFirst({
-            where:{
-                rentalRequestId
-            }
-        });
-
-
-
-    if(existingPayment){
-
+    if (existingPayment) {
         throw new AppError(
             HttpStatus.CONFLICT,
             "Payment already exists"
         );
     }
 
-
-
-
-    const session =
-    await stripe.checkout.sessions.create({
-
-        line_items:[
+    const session = await stripe.checkout.sessions.create({
+        line_items: [
             {
-                quantity:1,
-
-                price_data:{
-                    currency:"usd",
-
-                    unit_amount:
-                    Math.round(
-                        Number(rental.property.price) * 100
-                    ),
-
-                    product_data:{
-                        name:rental.property.title
-                    }
-                }
-            }
+                quantity: 1,
+                price_data: {
+                    currency: "usd",
+                    unit_amount: Math.round(Number(rental.property.price) * 100),
+                    product_data: {
+                        name: rental.property.title,
+                    },
+                },
+            },
         ],
-
-
-        mode:"payment",
-
-
-        payment_method_types:[
-            "card"
-        ],
-
-
-        customer_email:
-            rental.tenant.email,
-
-
-        success_url:
-        `${config.app_url}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-
-
-        cancel_url:
-        `${config.app_url}/payment/cancel`,
-
-
-
-        // FIX 1
-        metadata:{
-            tenantId:rental.tenant.id,
-            rentalRequestId:rental.id
-        }
-
+        mode: "payment",
+        payment_method_types: ["card"],
+        customer_email: rental.tenant.email,
+        success_url: `${config.app_url}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${config.app_url}/payment/cancel`,
+        metadata: {
+            tenantId: rental.tenant.id,
+            rentalRequestId: rental.id,
+        },
     });
-
-
 
     await prisma.payment.create({
-
-        data:{
-
-            transactionId:
-                session.id,
-
-
-            amount:
-                Number(rental.property.price),
-
-
-            provider:
-                PaymentProvider.STRIPE,
-
-
-            status:
-                PaymentStatus.PENDING,
-
-
-            rentalRequestId:
-                rental.id,
-
-
-            userId:
-                tenantId,
-
-            paidAt:null
-        }
-
+        data: {
+            transactionId: session.id,
+            amount: Number(rental.property.price),
+            provider: PaymentProvider.STRIPE,
+            status: PaymentStatus.PENDING,
+            rentalRequestId: rental.id,
+            userId: tenantId,
+            paidAt: null,
+        },
     });
 
-
-
     return {
-
-        checkoutUrl:
-            session.url,
-
-
-        transactionId:
-            session.id
+        checkoutUrl: session.url,
+        transactionId: session.id,
     };
-
 };
-
-
-
 
 // STRIPE WEBHOOK CONFIRM
-
 const confirmPaymentIntoDB = async (
-    payload:Buffer,
-    signature:string
-)=>{
-
-    try{
-
-
-        const event =
-        stripe.webhooks.constructEvent(
-
+    payload: Buffer,
+    signature: string
+) => {
+    try {
+        const event = stripe.webhooks.constructEvent(
             payload,
-
             signature,
-
             config.stripe_webhook_secret
-
         );
 
-
-
-        if(
-            event.type !==
-            "checkout.session.completed"
-        ){
-
-            return {
-                status:"IGNORED"
-            };
-
+        if (event.type !== "checkout.session.completed") {
+            return { status: "IGNORED" };
         }
 
+        const session = event.data.object as Stripe.Checkout.Session;
 
+        await prisma.$transaction(async (tx) => {
+            const payment = await tx.payment.update({
+                where: {
+                    transactionId: session.id,
+                },
+                data: {
+                    status: PaymentStatus.COMPLETED,
+                    paidAt: new Date(),
+                },
+            });
 
-        const session =
-        event.data.object as Stripe.Checkout.Session;
+            await tx.rentalRequest.update({
+                where: {
+                    id: payment.rentalRequestId,
+                },
+                data: {
+                    status: RequestStatus.ACTIVE,
+                },
+            });
+        });
 
-
-
-        await prisma.$transaction(
-            async(tx)=>{
-
-
-                const payment =
-                await tx.payment.update({
-
-                    where:{
-                        transactionId:
-                            session.id
-                    },
-
-
-                    data:{
-
-                        // FIX 3
-                        status:
-                        PaymentStatus.COMPLETED,
-
-
-                        paidAt:
-                        new Date()
-
-                    }
-
-                });
-
-
-
-                await tx.rentalRequest.update({
-
-                    where:{
-                        id:
-                        payment.rentalRequestId
-                    },
-
-
-                    data:{
-
-                        status:
-                        RequestStatus.ACTIVE
-
-                    }
-
-                });
-
-
-
-            }
-        );
-
-
-
-        return {
-            status:"SUCCESS"
-        };
-
-
-    }catch(error:any){
-
-
+        return { status: "SUCCESS" };
+    } catch (error: any) {
         throw new AppError(
-
             HttpStatus.BAD_REQUEST,
-
             error.message
-
         );
-
     }
-
 };
 
-
-
-
 // OPTIONAL VERIFY FROM SUCCESS PAGE
+const verifyPayment = async (sessionId: string) => {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-const verifyPayment = async(
-    sessionId:string
-)=>{
-
-
-    const session =
-    await stripe.checkout.sessions.retrieve(
-        sessionId
-    );
-
-
-
-    if(session.payment_status !== "paid"){
-
+    if (session.payment_status !== "paid") {
         throw new AppError(
             HttpStatus.BAD_REQUEST,
             "Payment not completed"
         );
-
     }
 
+    const rentalRequestId = session.metadata?.rentalRequestId;
 
-
-    const rentalRequestId =
-        session.metadata?.rentalRequestId;
-
-
-
-    if(!rentalRequestId){
-
+    if (!rentalRequestId) {
         throw new AppError(
             HttpStatus.BAD_REQUEST,
             "Rental request ID missing"
         );
-
     }
 
+    const result = await prisma.$transaction(async (tx) => {
+        const payment = await tx.payment.update({
+            where: {
+                transactionId: session.id,
+            },
+            data: {
+                status: PaymentStatus.COMPLETED,
+                paidAt: new Date(),
+            },
+        });
 
+        const rentalRequest = await tx.rentalRequest.update({
+            where: {
+                id: rentalRequestId,
+            },
+            data: {
+                status: RequestStatus.ACTIVE,
+            },
+        });
 
-    const result =
-    await prisma.$transaction(
-        async(tx)=>{
-
-
-            const payment =
-            await tx.payment.update({
-
-                where:{
-                    transactionId:
-                    session.id
-                },
-
-
-                data:{
-
-                    status:
-                    PaymentStatus.COMPLETED,
-
-
-                    paidAt:
-                    new Date()
-
-                }
-
-            });
-
-
-
-            const rentalRequest =
-            await tx.rentalRequest.update({
-
-                where:{
-                    id:
-                    rentalRequestId
-                },
-
-
-                data:{
-                    status:
-                    RequestStatus.ACTIVE
-                }
-
-            });
-
-
-
-            return {
-                payment,
-                rentalRequest
-            };
-
-        }
-    );
-
-
+        return {
+            payment,
+            rentalRequest,
+        };
+    });
 
     return result;
-
 };
 
-
-
-
-
-const getPaymentHistoryDB =
-async(userId:string)=>{
-
+const getPaymentHistoryDB = async (userId: string) => {
     return prisma.payment.findMany({
-
-        where:{
-            userId
+        where: { userId },
+        include: {
+            rentalRequest: true,
         },
-
-        include:{
-            rentalRequest:true
+        orderBy: {
+            createdAt: "desc",
         },
-
-        orderBy:{
-            createdAt:"desc"
-        }
-
     });
-
 };
 
-
-
-
-
-const getPaymentDetailsDB =
-async(
-    paymentId:string,
-    userId:string
-)=>{
-
-
-    const payment =
-    await prisma.payment.findFirst({
-
-        where:{
-            id:paymentId,
-            userId
+const getPaymentDetailsDB = async (
+    paymentId: string,
+    userId: string
+) => {
+    const payment = await prisma.payment.findFirst({
+        where: {
+            id: paymentId,
+            userId,
         },
-
-        include:{
-            rentalRequest:true
-        }
-
+        include: {
+            rentalRequest: true,
+        },
     });
 
-
-
-    if(!payment){
-
+    if (!payment) {
         throw new AppError(
             HttpStatus.NOT_FOUND,
             "Payment not found"
         );
-
     }
 
-
     return payment;
-
 };
 
-
-
-
-
 export const paymentService = {
-
     createPaymentIntoDB,
-
     confirmPaymentIntoDB,
-
     verifyPayment,
-
     getPaymentHistoryDB,
-
-    getPaymentDetailsDB
-
+    getPaymentDetailsDB,
 };
