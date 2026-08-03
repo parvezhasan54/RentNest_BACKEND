@@ -10,15 +10,7 @@ interface ICreateRentalRequestPayload {
     endDate?: string;
 }
 
-// FIX: previously did `{ tenantId, ...payload }` — spreading the raw request
-// body AFTER tenantId. Object spread is last-key-wins, so a client could
-// include its own `tenantId` in the body and silently override the
-// authenticated user's id, letting any tenant create a rental request under
-// someone else's identity. Now we whitelist exactly the fields we accept
-// from the client and always use the authenticated tenantId.
-// Also adds: property exists/available checks, date-order validation, and
-// a duplicate-request guard (nothing previously stopped a tenant from
-// submitting the same request over and over).
+
 const createRequest = async (
     payload: ICreateRentalRequestPayload,
     tenantId: string

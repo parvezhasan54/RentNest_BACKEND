@@ -80,9 +80,6 @@ const getAllPropertiesDB = async () => {
     }));
 };
 
-// NEW: lets an admin take a listing down (or restore it) without
-// touching the landlord's own property routes, which are scoped to
-// landlordId and would 404 for an admin acting on someone else's listing.
 const updatePropertyStatusDB = async (
     propertyId: string,
     payload: { status: PropertyStatus }
@@ -115,8 +112,6 @@ const updatePropertyStatusDB = async (
     return result;
 };
 
-// NEW: hard delete for a listing that should be removed entirely
-// (e.g. fraudulent or policy-violating content).
 const deletePropertyDB = async (propertyId: string) => {
     const property = await prisma.property.findUnique({
         where: { id: propertyId },

@@ -66,7 +66,7 @@ const getSavedProperties = catchAsync(async (req: Request, res: Response) => {
 export const propertyController = {
     getAllProperties,
     getPropertyById,
-    saveProperty,        // ADD
-    unsaveProperty,       // ADD
-    getSavedProperties     // ADD
+    saveProperty,       
+    unsaveProperty,       
+    getSavedProperties     
 };

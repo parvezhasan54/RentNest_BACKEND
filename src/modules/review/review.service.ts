@@ -4,9 +4,7 @@ import AppError from "../../utils/AppError";
 import HttpsStatus from "http-status-codes";
 
 const createReviewDB = async (payload: any, tenantId: string) => {
-    // check payment is done or not — scoped to THIS tenant's own rental request,
-    // not just any completed payment on the property (previous version let any
-    // tenant review a property as long as *someone* had paid for it).
+
     const propertyId = payload.propertyId;
     const request = await prisma.rentalRequest.findFirst({
         where: {
