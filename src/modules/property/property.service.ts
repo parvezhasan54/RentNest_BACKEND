@@ -1,5 +1,7 @@
 import { Prisma } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
+import AppError from "../../utils/AppError";           // ADD
+import HttpsStatus from "http-status-codes";    
 
 const getAllPropertiesFromDB = async (
     queryParams: {
@@ -103,6 +105,7 @@ const getAllPropertiesFromDB = async (
     };
 
 };
+
 const getPropertyByIdFromDB = async (propertyId: string) => {
   const result = await prisma.property.findUnique({
     where: {
@@ -133,4 +136,57 @@ const getPropertyByIdFromDB = async (propertyId: string) => {
   };
 };
 
-export const propertyService = { getAllPropertiesFromDB, getPropertyByIdFromDB }
+const savePropertyDB = async (propertyId: string, userId: string) => {
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId },
+  });
+
+  if (!property) {
+    throw new AppError(HttpsStatus.NOT_FOUND, "Property not found");
+  }
+
+  const existing = await prisma.savedProperty.findUnique({
+    where: { userId_propertyId: { userId, propertyId } },
+  });
+
+  if (existing) return existing;
+
+  return prisma.savedProperty.create({
+    data: { userId, propertyId },
+  });
+};
+
+const unsavePropertyDB = async (propertyId: string, userId: string) => {
+  await prisma.savedProperty.deleteMany({
+    where: { userId, propertyId },
+  });
+  return { propertyId };
+};
+
+const getSavedPropertiesFromDB = async (userId: string) => {
+  const saved = await prisma.savedProperty.findMany({
+    where: { userId },
+    include: {
+      property: {
+        include: {
+          category: true,
+          landlord: { select: { id: true, name: true, email: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return saved.map((s) => ({
+    ...s.property,
+    price: Number(s.property.price),
+  }));
+};
+
+export const propertyService = {
+  getAllPropertiesFromDB,
+  getPropertyByIdFromDB,
+  savePropertyDB,          // ADD
+  unsavePropertyDB,        // ADD
+  getSavedPropertiesFromDB // ADD
+};

@@ -10,6 +10,7 @@ model User {
   rentals    RentalRequest[]
   reviews    Review[]
   payments   Payment[]
+  savedProperties SavedProperty[]   // ADD THIS LINE
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
