@@ -13,6 +13,8 @@ import { adminRoute } from './modules/admin/admin.route';
 import { paymentRoute } from './modules/payment/payment.route';
 import { reviewRouter } from './modules/review/review.route';
 import { config } from './config/index';
+import path from 'path';
+import { uploadRoute } from './modules/upload/upload.route';
 const app = express();
 
 //use middleware
@@ -29,7 +31,7 @@ app.use("/api/payments/confirm", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/auth", authRoute);
 app.use("/api/properties", propertyRoute);
 app.use("/api/categories", categoryRoute);
@@ -38,6 +40,7 @@ app.use("/api/rentals", requestRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/payments", paymentRoute);
 app.use("/api/reviews", reviewRouter);
+app.use("/api/uploads", uploadRoute);
 
 app.use(globalErrorHandler);
 function startServer() {
