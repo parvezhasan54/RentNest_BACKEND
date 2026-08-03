@@ -1,15 +1,88 @@
 import { prisma } from "../../lib/prisma";
-import { Role } from "../../../generated/prisma/enums";
+import { Role, RequestStatus } from "../../../generated/prisma/enums";
+import AppError from "../../utils/AppError";
+import HttpsStatus from "http-status-codes";
 
-const createRequest = async (payload: any, tenantId: string) => {
+interface ICreateRentalRequestPayload {
+    propertyId: string;
+    message?: string;
+    startDate?: string;
+    endDate?: string;
+}
+
+// FIX: previously did `{ tenantId, ...payload }` — spreading the raw request
+// body AFTER tenantId. Object spread is last-key-wins, so a client could
+// include its own `tenantId` in the body and silently override the
+// authenticated user's id, letting any tenant create a rental request under
+// someone else's identity. Now we whitelist exactly the fields we accept
+// from the client and always use the authenticated tenantId.
+// Also adds: property exists/available checks, date-order validation, and
+// a duplicate-request guard (nothing previously stopped a tenant from
+// submitting the same request over and over).
+const createRequest = async (
+    payload: ICreateRentalRequestPayload,
+    tenantId: string
+) => {
+    const { propertyId, message, startDate, endDate } = payload;
+
+    if (!propertyId) {
+        throw new AppError(HttpsStatus.BAD_REQUEST, "propertyId is required");
+    }
+
+    const property = await prisma.property.findUnique({
+        where: { id: propertyId },
+    });
+
+    if (!property) {
+        throw new AppError(HttpsStatus.NOT_FOUND, "Property not found");
+    }
+
+    if (!property.available) {
+        throw new AppError(
+            HttpsStatus.BAD_REQUEST,
+            "This property is not currently available for rent"
+        );
+    }
+
+    if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+        throw new AppError(
+            HttpsStatus.BAD_REQUEST,
+            "End date must be after the start date"
+        );
+    }
+
+    const existing = await prisma.rentalRequest.findFirst({
+        where: {
+            tenantId,
+            propertyId,
+            status: {
+                in: [
+                    RequestStatus.PENDING,
+                    RequestStatus.APPROVED,
+                    RequestStatus.ACTIVE,
+                ],
+            },
+        },
+    });
+
+    if (existing) {
+        throw new AppError(
+            HttpsStatus.CONFLICT,
+            "You already have an active request for this property"
+        );
+    }
+
     const result = await prisma.rentalRequest.create({
         data: {
             tenantId,
-            ...payload
+            propertyId,
+            message,
+            startDate: startDate ? new Date(startDate) : undefined,
+            endDate: endDate ? new Date(endDate) : undefined,
         },
         include: {
-            property: true
-        }
+            property: true,
+        },
     });
 
     return result;
@@ -28,11 +101,6 @@ const getRequestByTenantIdDB = async (tenantId: string) => {
     return result;
 };
 
-// FIX: previously looked up by id alone — any authenticated TENANT could
-// fetch any other tenant's rental request (address, price, status) just
-// by guessing/knowing the UUID. Now scoped to the requesting user unless
-// they're an ADMIN. Also now includes tenant + payment so the payment
-// page can show real data instead of hardcoded placeholders.
 const getRequestByRequestIdDB = async (
     requestId: string,
     userId: string,
