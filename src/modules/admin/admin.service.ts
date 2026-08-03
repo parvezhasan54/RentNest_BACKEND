@@ -1,4 +1,4 @@
-import { Role } from "../../../generated/prisma/enums";
+import { PropertyStatus, Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../utils/AppError";
 import HttpsStatus from "http-status-codes";
@@ -69,7 +69,67 @@ const getAllPropertiesDB = async () => {
             },
             category: true,
         },
+        orderBy: {
+            createdAt: "desc",
+        },
     });
+
+    return result.map((property) => ({
+        ...property,
+        price: Number(property.price),
+    }));
+};
+
+// NEW: lets an admin take a listing down (or restore it) without
+// touching the landlord's own property routes, which are scoped to
+// landlordId and would 404 for an admin acting on someone else's listing.
+const updatePropertyStatusDB = async (
+    propertyId: string,
+    payload: { status: PropertyStatus }
+) => {
+    const allowedStatuses = [PropertyStatus.AVAILABLE, PropertyStatus.UNAVAILABLE];
+
+    if (!payload.status || !allowedStatuses.includes(payload.status)) {
+        throw new AppError(
+            HttpsStatus.BAD_REQUEST,
+            "Invalid property status."
+        );
+    }
+
+    const property = await prisma.property.findUnique({
+        where: { id: propertyId },
+    });
+
+    if (!property) {
+        throw new AppError(HttpsStatus.NOT_FOUND, "Property not found");
+    }
+
+    const result = await prisma.property.update({
+        where: { id: propertyId },
+        data: {
+            status: payload.status,
+            available: payload.status === PropertyStatus.AVAILABLE,
+        },
+    });
+
+    return result;
+};
+
+// NEW: hard delete for a listing that should be removed entirely
+// (e.g. fraudulent or policy-violating content).
+const deletePropertyDB = async (propertyId: string) => {
+    const property = await prisma.property.findUnique({
+        where: { id: propertyId },
+    });
+
+    if (!property) {
+        throw new AppError(HttpsStatus.NOT_FOUND, "Property not found");
+    }
+
+    const result = await prisma.property.delete({
+        where: { id: propertyId },
+    });
+
     return result;
 };
 
@@ -91,5 +151,7 @@ export const adminService = {
     getAllUserDB,
     updateUserStatusDB,
     getAllPropertiesDB,
+    updatePropertyStatusDB,
+    deletePropertyDB,
     getAllRentalsDB,
 };

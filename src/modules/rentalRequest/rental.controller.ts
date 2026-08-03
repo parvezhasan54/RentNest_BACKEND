@@ -28,8 +28,10 @@ const getRequestByTenantId = catchAsync(async (req: Request, res: Response, next
 });
 const getRequestByRequestId = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const requestId = req.params.id;
+    const userId = req.user?.id as string;
+    const role = req.user?.role;
 
-    const result = await requestService.getRequestByRequestIdDB(requestId as string)||[];
+    const result = await requestService.getRequestByRequestIdDB(requestId as string, userId, role) || [];
     sendResponse(res, {
         success: true,
         statusCode: HttsStatus.OK,

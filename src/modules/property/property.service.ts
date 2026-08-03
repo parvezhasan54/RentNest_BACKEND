@@ -1,7 +1,7 @@
 import { Prisma } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
-import AppError from "../../utils/AppError";           // ADD
-import HttpsStatus from "http-status-codes";    
+import AppError from "../../utils/AppError";
+import HttpsStatus from "http-status-codes";
 
 const getAllPropertiesFromDB = async (
     queryParams: {
@@ -95,7 +95,10 @@ const getAllPropertiesFromDB = async (
 
 
     return {
-        data: result,
+        data: result.map((property) => ({
+            ...property,
+            price: Number(property.price),
+        })),
         meta: {
             page: currentPage,
             limit: isAll ? total : pageLimit,
@@ -125,11 +128,24 @@ const getPropertyByIdFromDB = async (propertyId: string) => {
           email: true,
         },
       },
+      reviews: {
+        include: {
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
- 
+
   if (!result) return null;
- 
+
   return {
     ...result,
     price: Number(result.price),
@@ -186,7 +202,7 @@ const getSavedPropertiesFromDB = async (userId: string) => {
 export const propertyService = {
   getAllPropertiesFromDB,
   getPropertyByIdFromDB,
-  savePropertyDB,          // ADD
-  unsavePropertyDB,        // ADD
-  getSavedPropertiesFromDB // ADD
+  savePropertyDB,
+  unsavePropertyDB,
+  getSavedPropertiesFromDB,
 };

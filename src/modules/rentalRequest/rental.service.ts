@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma";
+import { Role } from "../../../generated/prisma/enums";
 
 const createRequest = async (payload: any, tenantId: string) => {
     const result = await prisma.rentalRequest.create({
@@ -27,16 +28,35 @@ const getRequestByTenantIdDB = async (tenantId: string) => {
     return result;
 };
 
-const getRequestByRequestIdDB = async (requestId: string) => {
-    // console.log("from service : ",{requestId});
-    const result = await prisma.rentalRequest.findUnique({
-        where: { id: requestId },
+// FIX: previously looked up by id alone — any authenticated TENANT could
+// fetch any other tenant's rental request (address, price, status) just
+// by guessing/knowing the UUID. Now scoped to the requesting user unless
+// they're an ADMIN. Also now includes tenant + payment so the payment
+// page can show real data instead of hardcoded placeholders.
+const getRequestByRequestIdDB = async (
+    requestId: string,
+    userId: string,
+    role?: Role
+) => {
+    const result = await prisma.rentalRequest.findFirst({
+        where: {
+            id: requestId,
+            ...(role !== Role.ADMIN ? { tenantId: userId } : {}),
+        },
         include: {
-            property: true
-        }
+            property: true,
+            tenant: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+            },
+            payment: true,
+        },
     });
-    return result;
 
+    return result;
 };
 
-export const requestService = { createRequest, getRequestByTenantIdDB ,getRequestByRequestIdDB}
+export const requestService = { createRequest, getRequestByTenantIdDB, getRequestByRequestIdDB }

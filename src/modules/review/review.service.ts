@@ -2,12 +2,16 @@ import { PaymentStatus } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../utils/AppError";
 import HttpsStatus from "http-status-codes";
+
 const createReviewDB = async (payload: any, tenantId: string) => {
-    //check payment is done or not
+    // check payment is done or not — scoped to THIS tenant's own rental request,
+    // not just any completed payment on the property (previous version let any
+    // tenant review a property as long as *someone* had paid for it).
     const propertyId = payload.propertyId;
     const request = await prisma.rentalRequest.findFirst({
         where: {
-            propertyId
+            propertyId,
+            tenantId,
         },
         include: {
             payment: true
@@ -29,11 +33,32 @@ const createReviewDB = async (payload: any, tenantId: string) => {
 
     const result = await prisma.review.create({
         data: {
-            ...payload,
+            rating: payload.rating,
+            comment: payload.comment,
+            propertyId,
             tenantId
         }
     });
     return result;
 };
 
-export const reviewService = { createReviewDB };
+const getReviewsByPropertyDB = async (propertyId: string) => {
+    const result = await prisma.review.findMany({
+        where: { propertyId },
+        include: {
+            tenant: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+
+    return result;
+};
+
+export const reviewService = { createReviewDB, getReviewsByPropertyDB };
