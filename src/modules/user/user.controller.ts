@@ -17,19 +17,23 @@ const resgisterUser = catchAsync(async (req: Request, res: Response, next: NextF
 
 const loginUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { accessToken, refreshToken, user } = await authService.logInUserIntoDB(req.body);
-    res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "none",
-        maxAge: 1000 * 60 * 60 * 24 //one day
-    });
+const isProd = process.env.NODE_ENV === "production";
 
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "none",
-        maxAge: 1000 * 60 * 60 * 24 * 7 //one day
-    });
+res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24,
+    path: "/",
+});
+
+res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    path: "/",
+});
 
 
     sendResponse(res, {

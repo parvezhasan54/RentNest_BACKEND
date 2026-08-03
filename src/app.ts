@@ -19,12 +19,9 @@ const app = express();
 
 //use middleware
 app.use(cors({
-    origin: [
-        config.app_url as string,
-        config.server_url as string
-    ],
-    credentials: true,
-}));
+       origin: [config.app_url as string, config.server_url as string],
+       credentials: true,
+   }));
 
 app.use("/api/payments/confirm", express.raw({ type: "application/json" }));
 
