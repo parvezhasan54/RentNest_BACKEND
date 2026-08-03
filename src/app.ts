@@ -1,34 +1,39 @@
-import cookieParser from 'cookie-parser';
-import express from 'express';
+import cookieParser from "cookie-parser";
+import express from "express";
 import HttpsStatus from "http-status-codes";
-import cors from "cors"
+import cors from "cors";
+import path from "path";
 
-import { authRoute } from './modules/user/user.route';
-import { globalErrorHandler } from './middlewares/globalErrorHandler';
-import { propertyRoute } from './modules/property/property.route';
-import { categoryRoute } from './modules/category/category.route';
-import { landlordRouter } from './modules/landlord/landlord.route';
-import { requestRoute } from './modules/rentalRequest/rental.route';
-import { adminRoute } from './modules/admin/admin.route';
-import { paymentRoute } from './modules/payment/payment.route';
-import { reviewRouter } from './modules/review/review.route';
-import { config } from './config/index';
-import path from 'path';
-import { uploadRoute } from './modules/upload/upload.route';
+import { authRoute } from "./modules/user/user.route";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler";
+import { propertyRoute } from "./modules/property/property.route";
+import { categoryRoute } from "./modules/category/category.route";
+import { landlordRouter } from "./modules/landlord/landlord.route";
+import { requestRoute } from "./modules/rentalRequest/rental.route";
+import { adminRoute } from "./modules/admin/admin.route";
+import { paymentRoute } from "./modules/payment/payment.route";
+import { reviewRouter } from "./modules/review/review.route";
+import { config } from "./config/index";
+import { uploadRoute } from "./modules/upload/upload.route";
+
 const app = express();
 
-//use middleware
+app.set("trust proxy", 1);
+
 app.use(cors({
-       origin: [config.app_url as string, config.server_url as string],
-       credentials: true,
-   }));
+    origin: [config.app_url as string, config.server_url as string],
+    credentials: true,
+}));
 
 app.use("/api/payments/confirm", express.raw({ type: "application/json" }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
+
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 app.use("/api/auth", authRoute);
 app.use("/api/properties", propertyRoute);
 app.use("/api/categories", categoryRoute);
@@ -40,13 +45,12 @@ app.use("/api/reviews", reviewRouter);
 app.use("/api/uploads", uploadRoute);
 
 app.use(globalErrorHandler);
-function startServer() {
-    app.get('/', (req, res) => {
-        res.status(HttpsStatus.ACCEPTED).json({
-            success: true,
-            message: "RentNest App Apis Is running"
-        });
+
+app.get("/", (req, res) => {
+    res.status(HttpsStatus.ACCEPTED).json({
+        success: true,
+        message: "RentNest App APIs Is running",
     });
-}
-startServer();
+});
+
 export default app;
