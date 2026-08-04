@@ -193,7 +193,11 @@ const getPaymentHistoryDB = async (userId: string) => {
       userId,
     },
     include: {
-      rentalRequest: true,
+      rentalRequest: {
+        include: {
+          property: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
