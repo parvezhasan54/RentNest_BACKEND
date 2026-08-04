@@ -20,11 +20,7 @@ router.post(
   paymentController.verifyPayment
 );
 
-router.get(
-  "/history",
-  auth([Role.TENANT, Role.ADMIN]),
-  paymentController.getPaymentHistory
-);
+router.get("/history",auth([Role.TENANT, Role.ADMIN]),paymentController.getPaymentHistory);
 
 router.get(
   "/:id",
