@@ -53,17 +53,16 @@ const createPaymentIntoDB = async (
   }
 
   const existingPayment = await prisma.payment.findFirst({
-    where: {
-      rentalRequestId,
-    },
+    where: { rentalRequestId, status: PaymentStatus.COMPLETED },
   });
-
   if (existingPayment) {
-    throw new AppError(
-      HttpStatus.CONFLICT,
-      "Payment already exists"
-    );
+    throw new AppError(HttpStatus.CONFLICT, "Payment already completed for this rental request");
   }
+
+  // Clear out any abandoned/cancelled attempts before starting a new Stripe session
+  await prisma.payment.deleteMany({
+    where: { rentalRequestId, status: { not: PaymentStatus.COMPLETED } },
+  });
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
