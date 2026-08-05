@@ -161,29 +161,38 @@ const verifyPayment = async (sessionId: string) => {
   const session = await stripe.checkout.sessions.retrieve(sessionId);
 
   if (session.payment_status !== "paid") {
-    throw new AppError(
-      HttpStatus.BAD_REQUEST,
-      "Payment not completed"
-    );
+    throw new AppError(HttpStatus.BAD_REQUEST, "Payment not completed");
   }
 
-  const payment = await prisma.payment.findUnique({
-    where: {
-      transactionId: session.id,
-    },
-    include: {
-      rentalRequest: true,
-    },
+  const existingPayment = await prisma.payment.findUnique({
+    where: { transactionId: session.id },
+    include: { rentalRequest: true },
   });
 
-  if (!payment) {
-    throw new AppError(
-      HttpStatus.NOT_FOUND,
-      "Payment not found"
-    );
+  if (!existingPayment) {
+    throw new AppError(HttpStatus.NOT_FOUND, "Payment not found");
   }
 
-  return payment;
+  // Self-heal: if the webhook hasn't landed yet (or ever), update here.
+  if (existingPayment.status !== PaymentStatus.COMPLETED) {
+    const updated = await prisma.$transaction(async (tx) => {
+      const payment = await tx.payment.update({
+        where: { transactionId: session.id },
+        data: { status: PaymentStatus.COMPLETED, paidAt: new Date() },
+      });
+
+      await tx.rentalRequest.update({
+        where: { id: payment.rentalRequestId },
+        data: { status: RequestStatus.ACTIVE },
+      });
+
+      return payment;
+    });
+
+    return { ...existingPayment, ...updated };
+  }
+
+  return existingPayment;
 };
 
 const getPaymentHistoryDB = async (userId: string) => {
