@@ -7,7 +7,11 @@ import { IRegisterPayload } from "./user.interface";
 import bcrypt from "bcrypt";
 import HttpsStatus from "http-status-codes";
 const registerUserDB = async (userData: IRegisterPayload) => {
-    const { name, email, password, role } = userData;
+const { name, email, password, role } = userData;
+
+if (role && role !== "TENANT" && role !== "LANDLORD") {
+  throw new AppError(HttpsStatus.FORBIDDEN, "Invalid account type");
+}
 
     //check user is exist or not
     const isExist = await prisma.user.findUnique({

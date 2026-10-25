@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type Category = Prisma.CategoryModel
 /**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
+/**
  * Model Payment
  * 
  */

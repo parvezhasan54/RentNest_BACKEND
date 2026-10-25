@@ -23,6 +23,11 @@ export * from './enums';
  */
 export type Category = Prisma.CategoryModel
 /**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
+/**
  * Model Payment
  * 
  */
