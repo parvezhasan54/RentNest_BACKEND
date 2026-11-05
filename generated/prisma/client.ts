@@ -52,6 +52,11 @@ export type Category = Prisma.CategoryModel
  */
 export type ContactMessage = Prisma.ContactMessageModel
 /**
+ * Model NewsletterSubscriber
+ * 
+ */
+export type NewsletterSubscriber = Prisma.NewsletterSubscriberModel
+/**
  * Model Payment
  * 
  */

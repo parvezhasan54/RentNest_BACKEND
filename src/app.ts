@@ -15,6 +15,10 @@ import { paymentRoute } from "./modules/payment/payment.route";
 import { reviewRouter } from "./modules/review/review.route";
 import { config } from "./config/index";
 import { uploadRoute } from "./modules/upload/upload.route";
+import { contactRoute } from "./modules/contact/contact.route";
+import { statsRoute } from "./modules/stats/stats.route";
+import { aiRoute } from "./modules/ai/ai.route";
+import { newsletterRoute } from "./modules/newsletter/newsletter.route";
 
 const app = express();
 
@@ -43,7 +47,10 @@ app.use("/api/admin", adminRoute);
 app.use("/api/payments", paymentRoute);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/uploads", uploadRoute);
-
+app.use("/api/contact", contactRoute);
+app.use("/api/stats", statsRoute);
+app.use("/api/ai", aiRoute);
+app.use("/api/newsletter", newsletterRoute);
 app.use(globalErrorHandler);
 
 app.get("/", (req, res) => {

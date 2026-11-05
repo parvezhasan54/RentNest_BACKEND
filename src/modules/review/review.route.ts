@@ -5,6 +5,6 @@ import { Role } from "../../../generated/prisma/client";
 
 const router = Router();
 router.post('/', auth([Role.TENANT, Role.ADMIN]), reviewController.createReview);
+router.get('/latest', reviewController.getLatestReviews);
 router.get('/property/:propertyId', reviewController.getReviewsByProperty);
-
 export const reviewRouter = router;

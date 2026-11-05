@@ -1,11 +1,14 @@
+
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { authService } from "./user.service"
+import { authService } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
-import HttpsStatus from "http-status-codes"
-const resgisterUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+import HttpsStatus from "http-status-codes";
+import AppError from "../../utils/AppError";
 
-    const result = await authService.registerUserDB(req.body) || [];
+const registerUser = catchAsync(async (req: Request, res: Response) => {
+    const result = await authService.registerUserDB(req.body);
+
     sendResponse(res, {
         success: true,
         statusCode: HttpsStatus.CREATED,
@@ -14,27 +17,27 @@ const resgisterUser = catchAsync(async (req: Request, res: Response, next: NextF
     });
 });
 
+const loginUser = catchAsync(async (req: Request, res: Response) => {
+    const { accessToken, refreshToken, user } =
+        await authService.logInUserIntoDB(req.body);
 
-const loginUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken, refreshToken, user } = await authService.logInUserIntoDB(req.body);
-const isProd = process.env.NODE_ENV === "production";
+    const isProd = process.env.NODE_ENV === "production";
 
-res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? "none" : "lax",
-    maxAge: 1000 * 60 * 60 * 24,
-    path: "/",
-});
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 1000 * 60 * 60 * 24,
+        path: "/"
+    });
 
-res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? "none" : "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    path: "/",
-});
-
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        path: "/"
+    });
 
     sendResponse(res, {
         success: true,
@@ -42,43 +45,102 @@ res.cookie("refreshToken", refreshToken, {
         message: "User Login Successfully",
         data: {
             accessToken,
-            refreshToken
+            refreshToken,
+            user
         }
     });
 });
 
-const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user;
-    const result = await authService.getMeDB(user?.email as string);
-    // console.log("from controller : ", req.user);
+const getMe = catchAsync(async (req: Request, res: Response) => {
+    const result = await authService.getMeDB(req.user!.email);
+
     sendResponse(res, {
         success: true,
         statusCode: HttpsStatus.OK,
         message: "User fetched successfully",
         data: result
     });
-
 });
 
-const refreshToken = catchAsync(async (req : Request, res : Response, next: NextFunction) => {
-    const refreshToken = req.cookies.refreshToken;
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+    const token = req.cookies.refreshToken;
 
-    const {accessToken} = await authService.refreshToken(refreshToken);
+    if (!token) {
+        throw new AppError(
+            HttpsStatus.UNAUTHORIZED,
+            "Refresh token is required"
+        );
+    }
+
+    const { accessToken } = await authService.refreshToken(token);
+
+    const isProd = process.env.NODE_ENV === "production";
 
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "none",
-        maxAge: 1000 * 60 * 60 * 24 // 24 hour or 1 day
-    })
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 1000 * 60 * 60 * 24,
+        path: "/"
+    });
 
     sendResponse(res, {
-        success : true,
-        statusCode : HttpsStatus.OK,
-        message : "Token Refreshed Successfully",
-        data : {
-            accessToken
-        }
-    })
-})
-export const authController = { resgisterUser, loginUser, getMe,refreshToken }
+        success: true,
+        statusCode: HttpsStatus.OK,
+        message: "Token Refreshed Successfully",
+        data: { accessToken }
+    });
+});
+
+const updateMe = catchAsync(async (req: Request, res: Response) => {
+    const result = await authService.updateMeDB(req.user!.id, req.body);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: HttpsStatus.OK,
+        message: "Profile updated",
+        data: result
+    });
+});
+
+const googleLogin = catchAsync(async (req: Request, res: Response) => {
+    const { accessToken, refreshToken } =
+        await authService.googleLoginDB(
+            req.body.credential,
+            req.body.role
+        );
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 1000 * 60 * 60 * 24,
+        path: "/"
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        path: "/"
+    });
+
+    sendResponse(res, {
+        success: true,
+        statusCode: HttpsStatus.OK,
+        message: "User Login Successfully",
+        data: { accessToken, refreshToken }
+    });
+});
+
+export const authController = {
+    registerUser,
+    loginUser,
+    getMe,
+    refreshToken,
+    updateMe,
+    googleLogin
+};

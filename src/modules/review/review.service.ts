@@ -58,5 +58,21 @@ const getReviewsByPropertyDB = async (propertyId: string) => {
 
     return result;
 };
-
-export const reviewService = { createReviewDB, getReviewsByPropertyDB };
+const getLatestReviewsDB = async (limit = 3) =>
+    prisma.review.findMany({
+        where: { rating: { gte: 4 }, comment: { not: null } },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        select: {
+            id: true,
+            rating: true,
+            comment: true,
+            createdAt: true,
+            tenant: { select: { name: true } },
+            property: { select: { id: true, title: true, city: true } },
+        },
+    });
+export const reviewService = { 
+    createReviewDB, getReviewsByPropertyDB ,
+    getLatestReviewsDB
+};

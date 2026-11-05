@@ -25,4 +25,7 @@ export const config = {
     api_key: process.env.CLOUDINARY_API_KEY!,
     api_secret: process.env.CLOUDINARY_API_SECRET!,
   },
+  google_client_id: process.env.GOOGLE_CLIENT_ID!,
+  anthropic_api_key: process.env.ANTHROPIC_API_KEY!,
+  ai_model: process.env.AI_MODEL || "claude-haiku-5-5",
 };

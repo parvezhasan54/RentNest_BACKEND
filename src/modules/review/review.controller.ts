@@ -26,5 +26,9 @@ const getReviewsByProperty = catchAsync(async (req: Request, res: Response, next
     })
 });
 
-
-export const reviewController = { createReview, getReviewsByProperty }
+const getLatestReviews = catchAsync(async (req: Request, res: Response) => {
+    const limit = Math.min(12, Math.max(1, Number(req.query.limit) || 3));
+    const result = await reviewService.getLatestReviewsDB(limit);
+    sendResponse(res, { success: true, statusCode: HttpsStatus.OK, message: "Latest reviews retrieved", data: result });
+});
+export const reviewController = { createReview, getReviewsByProperty,getLatestReviews }
