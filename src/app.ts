@@ -25,7 +25,7 @@ const app = express();
 app.set("trust proxy", 1);
 
 app.use(cors({
-    origin: [config.app_url as string, config.server_url as string,"http://localhost:3000"],
+    origin: [config.app_url as string, config.server_url as string,"https://rentnest-online.onrender.com"],
     credentials: true,
 }));
 
